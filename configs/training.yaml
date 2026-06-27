@@ -1,0 +1,43 @@
+# configs/training.yaml
+# Optimized for MacBook Air M4 with 16GB RAM
+
+model:
+  # Nano model - smallest and fastest
+  name: yolov8n.pt
+
+training:
+  # Reduce epochs for faster turnaround
+  epochs: 50
+  
+  # Critical: reduce batch size to avoid swapping
+  batch: 4
+  
+  # Slightly reduce image size for memory savings
+  imgsz: 480
+  
+  # Reduce workers to save memory
+  workers: 2
+  
+  # Early stopping if no improvement
+  patience: 15
+
+optimizer:
+  name: AdamW
+  lr0: 0.001
+  momentum: 0.937
+  weight_decay: 0.0005
+
+device:
+  type: mps
+
+output:
+  dir: outputs/training
+  name: pcb_defect_yolov8
+
+augmentation:
+  # Disable mosaic - saves memory and better for small defects
+  mosaic: 0.0
+  fliplr: 0.5
+  flipud: 0.0
+  mixup: 0.0
+  copy_paste: 0.0

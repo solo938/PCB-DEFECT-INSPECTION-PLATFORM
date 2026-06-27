@@ -1,0 +1,107 @@
+# ─────────────────────────────────────────────
+# Core deep learning + computer vision
+# ─────────────────────────────────────────────
+
+torch                # YOLOv8 training backbone
+torchvision            # paired with torch — must match major version
+ultralytics            # YOLOv8 — train, evaluate, export
+
+# ─────────────────────────────────────────────
+# Image processing
+# ─────────────────────────────────────────────
+
+opencv-python          # validate.py: image dimensions, bbox drawing
+                       # optimize.py: inference preprocessing
+                       # streamlit_app.py: overlay rendering
+                       # template_diff.py (phase 2): registration + diff
+
+Pillow                 # validate.py: PIL.Image + UnidentifiedImageError
+                       # safer than cv2 for corruption detection
+
+# ─────────────────────────────────────────────
+# Data augmentation
+# ─────────────────────────────────────────────
+
+albumentations         # augment.py: all transforms including bbox-aware
+
+# ─────────────────────────────────────────────
+# Model optimisation + inference
+# ─────────────────────────────────────────────
+
+onnx                   # optimize.py: export format
+onnxruntime            # optimize.py: FP32 inference + latency benchmark
+onnxruntime-tools      # optimize.py: INT8 static quantization
+
+# ─────────────────────────────────────────────
+# Evaluation + metrics
+# ─────────────────────────────────────────────
+
+scikit-learn           # evaluate.py: confusion matrix, classification report
+matplotlib             # evaluate.py: confusion matrix plot, bbox size histogram
+                       # statistics.py: class distribution bar chart
+seaborn                # evaluate.py: heatmap styling on confusion matrix
+numpy                  # everywhere — pinned to avoid torch incompatibility
+
+# ─────────────────────────────────────────────
+# Explainability
+# ─────────────────────────────────────────────
+
+grad-cam               # explainability/gradcam.py: GradCAM overlay
+                       # works with PyTorch models directly
+
+# ─────────────────────────────────────────────
+# RAG retrieval
+# ─────────────────────────────────────────────
+
+faiss-cpu              # rag_retriever.py: vector index (CPU version)
+sentence-transformers  # rag_retriever.py: all-MiniLM-L6-v2 embeddings
+                       # pulls in transformers + tokenizers automatically
+
+# ─────────────────────────────────────────────
+# Experiment tracking
+# ─────────────────────────────────────────────
+
+wandb                  # train.py: loss curves, mAP plots, run comparison
+
+# ─────────────────────────────────────────────
+# Demo application
+# ─────────────────────────────────────────────
+
+streamlit              # streamlit_app.py: upload → detect → explain UI
+watchdog               # streamlit dependency — faster file watching on Linux
+
+# ─────────────────────────────────────────────
+# Data handling + reporting
+# ─────────────────────────────────────────────
+
+pandas                 # statistics.py: dataset report tables
+                       # evaluate.py: metrics CSV export
+PyYAML                 # dataset.yaml parsing — also used by ultralytics internally
+
+# ─────────────────────────────────────────────
+# Video processing (tracking stub)
+# ─────────────────────────────────────────────
+
+lapx                   # Modernized fork of lap to support Python 3.13 compilation
+
+# ─────────────────────────────────────────────
+# Camera calibration module
+# ─────────────────────────────────────────────
+
+# opencv-python above already covers cv2.calibrateCamera
+# no additional library needed for camera/calibration.py
+
+# ─────────────────────────────────────────────
+# Utilities
+# ─────────────────────────────────────────────
+
+tqdm                   # progress bars in data_pipeline.py and evaluate.py
+rich                   # validate.py: formatted terminal summary table
+python-dotenv          # config: loads .env for W&B API key, output paths
+
+
+fastapi 
+
+aiohttp
+
+pytest

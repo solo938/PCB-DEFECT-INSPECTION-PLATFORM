@@ -1,0 +1,15 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DEVICE=cpu
+      - WEIGHTS_PATH=models/best.onnx
+    volumes:
+      - ./models:/app/models
+      - ./outputs:/app/outputs
+    restart: unless-stopped
