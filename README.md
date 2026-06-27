@@ -402,12 +402,6 @@ See `docs/ROADMAP.md` for full details.
 
 ---
 
-## Model card
-
-See [`model_card.md`](model_card.md) — architecture, training procedure, known failure modes, deployment constraints, out-of-scope uses.
-
----
-
 ## Author
 
 **Sahariar Hasan** — ML Engineer · Computer Vision · LLM Systems
