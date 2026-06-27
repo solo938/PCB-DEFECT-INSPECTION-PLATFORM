@@ -4,7 +4,7 @@
 
 **Production-Ready Computer Vision System for Automated PCB Quality Inspection**
 
-*YOLOv8 · FastAPI · Streamlit · ONNX Runtime · PyTorch · Vision + RAG*
+*YOLOv8 · FastAPI · Streamlit · ONNX Runtime · PyTorch · Vision + RAG · Statistical Analysis*
 
 [![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.3-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)](https://pytorch.org)
@@ -21,13 +21,11 @@
 
 ## What makes this different
 
-Most CV portfolio projects are: download dataset → train YOLO → show mAP.
+Most CV portfolio projects: download dataset → train YOLO → report mAP.
 
-This one covers the full engineering lifecycle a production CV team actually runs:
+This one covers the full engineering lifecycle a production CV team actually runs — including statistical characterisation of the model as a measurement instrument, which is standard in metrology and process control environments.
 
-> **Validated data pipeline → Transfer learning → Failure analysis → ONNX optimisation → FastAPI deployment → Streamlit dashboard → Vision+RAG reasoning layer**
-
-The Vision+RAG layer is the differentiator. When the model detects a defect, it retrieves manufacturing process context from a FAISS-indexed knowledge base — returning probable causes and corrective inspection steps alongside the bounding box. This directly mirrors how semiconductor inspection systems work in production environments.
+> **Validated data pipeline → Transfer learning → Statistical analysis → Failure analysis → ONNX optimisation → FastAPI deployment → Streamlit dashboard → Vision+RAG reasoning layer**
 
 ---
 
@@ -40,54 +38,55 @@ https://github.com/user-attachments/assets/98927dbf-991e-432d-8c9a-d42f2b6e3376
 ## System architecture
 
 <p align="center">
-  <img src="assets/architecture.png" width="95%" alt="PCB Defect Inspection Platform Architecture">
+  <img src="assets/architecture.png" width="95%" alt="System Architecture">
 </p>
 
 ```
-DeepPCB Dataset (1,500 triplets)
+DeepPCB Dataset (1,500 image triplets)
         │
         ▼
-┌─────────────────────────────┐
-│     DATA PIPELINE           │
-│  Validate → Convert →       │
-│  Split → Augment → QA Gate  │
-└────────────┬────────────────┘
+┌─────────────────────────────────┐
+│  DATA PIPELINE                  │
+│  Validate → Convert →           │
+│  Split → Augment → QA Gate      │
+└────────────┬────────────────────┘
              │
              ▼
-┌─────────────────────────────┐
-│     TRAINING PIPELINE       │
-│  YOLOv8 + Transfer Learning │
-│  W&B Experiment Tracking    │
-└────────────┬────────────────┘
+┌─────────────────────────────────┐
+│  TRAINING PIPELINE              │
+│  YOLOv8 + Transfer Learning     │
+│  W&B Experiment Tracking        │
+└────────────┬────────────────────┘
              │
              ▼
-┌─────────────────────────────┐
-│     EVALUATION PIPELINE     │
-│  mAP · Confusion Matrix ·   │
-│  PR Curves · Failure Grid   │
-└────────────┬────────────────┘
+┌─────────────────────────────────┐
+│  EVALUATION + STATISTICAL       │
+│  ANALYSIS PIPELINE              │
+│  mAP · Calibration · Spatial    │
+│  Hypothesis Testing · ECE       │
+└────────────┬────────────────────┘
              │
              ▼
-┌─────────────────────────────┐
-│     OPTIMISATION            │
-│  ONNX Export · FP32 Bench   │
-└────────────┬────────────────┘
+┌─────────────────────────────────┐
+│  OPTIMISATION                   │
+│  ONNX Export · FP32 Benchmark   │
+└────────────┬────────────────────┘
              │
-        ┌────┴─────┐
-        ▼          ▼
-   FastAPI      Streamlit
-   REST API     Dashboard
-        │          │
-        └────┬─────┘
+        ┌────┴──────┐
+        ▼           ▼
+   FastAPI       Streamlit
+   REST API      Dashboard
+        │           │
+        └────┬──────┘
              ▼
      Vision + RAG Layer
-  (FAISS · sentence-transformers)
+  FAISS · sentence-transformers
   Defect → Causes → Fix Steps
 ```
 
 ---
 
-## Performance
+## Model performance
 
 | Metric | Value |
 |---|---|
@@ -96,15 +95,16 @@ DeepPCB Dataset (1,500 triplets)
 | Recall | **96.8%** |
 | F1 Score | **97.5%** |
 | Defect classes | **6** |
-| Training samples | **4,192** |
+| Training samples | **4,192** (after augmentation) |
 | Training time | **152.9 min** |
 | Device | **Apple M4 MPS** |
+| Epochs | **50** |
 
 **Inference benchmark**
 
-| Format | Latency | FPS | Device |
+| Format | Mean latency | FPS | Device |
 |---|---|---|---|
-| PyTorch | 17.3 ms | **57.8** | Apple MPS |
+| PyTorch | 17.3 ms | **57.8** | Apple M4 MPS |
 | ONNX FP32 | 18.3 ms | **54.8** | CPU |
 
 ---
@@ -112,7 +112,7 @@ DeepPCB Dataset (1,500 triplets)
 ## Evaluation results
 
 <p align="center">
-  <img src="assets/evaluation_results.png" width="95%" alt="Evaluation Results — Confusion Matrix, PR Curves, Per-Class AP">
+  <img src="assets/evaluation_results.png" width="95%" alt="Evaluation Results">
 </p>
 
 ---
@@ -120,7 +120,7 @@ DeepPCB Dataset (1,500 triplets)
 ## Inference benchmark
 
 <p align="center">
-  <img src="assets/benchmark_results.png" width="95%" alt="Inference Latency Benchmark">
+  <img src="assets/benchmark_results.png" width="95%" alt="Benchmark Results">
 </p>
 
 ---
@@ -128,10 +128,116 @@ DeepPCB Dataset (1,500 triplets)
 ## PyTorch vs ONNX
 
 <p align="center">
-  <img src="assets/pytorch_vs_onnx.png" width="95%" alt="PyTorch vs ONNX Runtime Comparison">
+  <img src="assets/pytorch_vs_onnx.png" width="95%" alt="PyTorch vs ONNX">
 </p>
 
 ---
+
+## Statistical analysis
+
+Full notebook: [`notebooks/statistical_analysis.ipynb`](notebooks/statistical_analysis.ipynb)
+
+This section applies the same statistical rigour used in metrology and process control — treating detection confidence scores as measurement signals and characterising their distributions, calibration, and spatial properties.
+
+**1,537 predictions across 230 test images. 6 defect classes.**
+
+### Confidence signal quality
+
+All 6 classes follow non-normal distributions (Shapiro-Wilk p ≈ 0 for all). Non-parametric methods used throughout.
+
+| Class | N | Mean conf | Std | Distribution |
+|---|---|---|---|---|
+| Spurious Copper | 237 | **0.893** | 0.072 | Non-normal |
+| Pin Hole | 230 | **0.881** | 0.058 | Non-normal |
+| Spur | 260 | 0.846 | 0.048 | Non-normal |
+| Mouse Bite | 299 | 0.845 | 0.052 | Non-normal |
+| Open Circuit | 295 | 0.828 | 0.042 | Non-normal |
+| Short Circuit | 216 | 0.820 | **0.082** | Non-normal |
+
+Short Circuit shows the highest variance (σ=0.082) — indicating the most inconsistent detection signal. This class benefits most from additional training data.
+
+### Inter-class difficulty — Kruskal-Wallis test
+
+**H₀:** All defect classes have the same median detection confidence.
+
+```
+Kruskal-Wallis H = 648.42    p < 0.0001
+```
+
+**H₀ rejected.** Classes are not equally detectable. Pairwise Mann-Whitney U tests (Bonferroni corrected) confirm 13 of 15 class pairs are significantly different. The two exceptions:
+
+- Mouse Bite vs Spur (p=0.671) — similar difficulty level
+- Open Circuit vs Short Circuit (p=0.026, not significant after Bonferroni)
+
+<p align="center">
+  <img src="outputs/statistical_analysis/interclass_significance_matrix.png" width="75%" alt="Pairwise Significance Matrix">
+</p>
+
+### Spatial characterisation
+
+All 6 defect classes are **uniformly distributed** across the PCB surface (all centres of mass within 5–52% of image centre, std ~0.20–0.25 on both axes).
+
+| Class | Centre of mass (x, y) | Spatial pattern |
+|---|---|---|
+| Mouse Bite | (0.44, 0.47) | Uniform |
+| Open Circuit | (0.45, 0.49) | Uniform |
+| Pin Hole | (0.52, 0.45) | Uniform |
+| Short Circuit | (0.47, 0.49) | Uniform |
+| Spur | (0.43, 0.46) | Uniform |
+| Spurious Copper | (0.43, 0.46) | Uniform |
+
+**Interpretation:** No edge clustering detected. Defects are process chamber-wide rather than localised stress points. This rules out clamping or handling as the primary defect cause in this dataset — defects originate from etching, plating, or photolithography process variation.
+
+### Deployment threshold recommendations
+
+Standard 0.45 threshold is not optimal for all classes. ECE-based calibration analysis produces per-class thresholds:
+
+| Class | Default | Recommended | Reason |
+|---|---|---|---|
+| Spurious Copper | 0.45 | 0.45 | Well calibrated |
+| Pin Hole | 0.45 | 0.45 | Well calibrated |
+| Open Circuit | 0.45 | 0.40 | Slightly overconfident |
+| Spur | 0.45 | 0.40 | Slightly overconfident |
+| Mouse Bite | 0.45 | **0.35** | Overconfident — high FN risk |
+| Short Circuit | 0.45 | **0.35** | Overconfident — high variance |
+
+Per-class thresholds are saved to `outputs/statistical_analysis/statistical_summary.json` and loaded by the API at runtime.
+
+---
+
+## Vision + RAG — the differentiator
+
+Raw bounding boxes tell engineers *where* a defect is. This project adds a retrieval layer explaining *why* it occurred and *what to check*:
+
+```
+Image uploaded
+      │
+      ▼
+YOLOv8 detection
+      │
+ Defect: spurious_copper  conf: 0.93
+      │
+      ▼
+FAISS retrieval → PCB process knowledge base
+      │
+      ▼
+┌──────────────────────────────────────────────┐
+│  Spurious Copper                             │
+│                                              │
+│  Probable causes:                            │
+│  • Copper plating bath contamination         │
+│  • Incomplete resist removal                 │
+│  • Electroplating process issues             │
+│                                              │
+│  Recommended inspection:                     │
+│  • Visual inspection for copper residues     │
+│  • Check cleaning process effectiveness      │
+│  • Review plating bath chemistry             │
+└──────────────────────────────────────────────┘
+```
+
+---
+
 ## What's built
 
 ✅ Dataset validation with per-sample triplet verification  
@@ -145,60 +251,17 @@ DeepPCB Dataset (1,500 triplets)
 ✅ Confusion matrix (raw + normalised)  
 ✅ PR curves with optimal confidence threshold per class  
 ✅ Failure analysis — top-10 missed detections + false positives  
+✅ Statistical analysis — confidence distributions, hypothesis testing, calibration, spatial mapping  
 ✅ ONNX export with FP32 latency benchmark  
 ✅ FastAPI REST API with Swagger docs  
 ✅ Streamlit dashboard with numbered detection overlays  
 ✅ Vision + RAG layer (FAISS + sentence-transformers)  
 ✅ Docker + Docker Compose deployment  
 ✅ Single image, batch, video, and camera inference  
-✅ Per-module logging and QA reports  
-
----
-
-## Vision + RAG — the differentiator
-
-Raw bounding boxes tell engineers *where* a defect is. They don't explain *why* it occurred or *what to check*.
-
-This project adds a retrieval layer on top of detection:
-
-```
-Image uploaded
-      │
-      ▼
-YOLOv8 detection
-      │
- Defect: spurious_copper (conf: 0.93)
-      │
-      ▼
-FAISS retrieval from PCB process knowledge base
-      │
-      ▼
-┌─────────────────────────────────────────────┐
-│  Spurious Copper                            │
-│                                             │
-│  What it is:                                │
-│  Unwanted copper deposits that should not   │
-│  be present on the PCB surface.             │
-│                                             │
-│  Probable causes:                           │
-│  • Copper plating bath contamination        │
-│  • Incomplete resist removal                │
-│  • Electroplating process issues            │
-│                                             │
-│  Recommended inspection:                    │
-│  • Visual inspection for copper residues    │
-│  • Check cleaning process effectiveness     │
-│  • Review plating bath chemistry            │
-└─────────────────────────────────────────────┘
-```
-
-This is exactly the capability described in the JD requirement: *"integrate vision capabilities into broader multimodal AI systems that combine visual perception with knowledge retrieval and reasoning."*
 
 ---
 
 ## Quick start
-
-**Clone and set up**
 
 ```bash
 git clone https://github.com/solo938/PCB-DEFECT-INSPECTION-PLATFORM.git
@@ -215,23 +278,18 @@ pip install -r requirements.txt
 python -m src.pipeline.run_pipeline
 ```
 
-Runs: download → validate → convert → split → augment → statistics → qa. Exits non-zero if QA fails — training cannot start on bad data.
-
 **Train**
 
 ```bash
 bash scripts/train.sh
-# or
-python -m src.training.train --model yolov8n --epochs 100 --data configs/dataset.yaml
 ```
 
-**Evaluate**
+**Evaluate + statistical analysis**
 
 ```bash
 bash scripts/evaluate.sh
+jupyter nbconvert --to notebook --execute notebooks/statistical_analysis.ipynb
 ```
-
-Full report written to `outputs/eval_report/evaluation_report.md`.
 
 **Export and benchmark**
 
@@ -274,7 +332,7 @@ docker-compose up --build
 | `POST` | `/api/v1/predict/batch` | Multiple images |
 | `POST` | `/api/v1/predict/annotated` | Image upload → annotated image |
 
-**Example**
+**Example — real output from this model**
 
 ```bash
 curl -X POST http://localhost:8000/api/v1/predict \
@@ -292,6 +350,12 @@ curl -X POST http://localhost:8000/api/v1/predict \
       "class_name": "spurious_copper",
       "confidence": 0.926,
       "bbox": { "x1": 103, "y1": 420, "x2": 136, "y2": 455 }
+    },
+    {
+      "class_id": 1,
+      "class_name": "short",
+      "confidence": 0.872,
+      "bbox": { "x1": 168, "y1": 395, "x2": 208, "y2": 489 }
     }
   ]
 }
@@ -301,22 +365,20 @@ curl -X POST http://localhost:8000/api/v1/predict \
 
 ## Dataset
 
-[DeepPCB](https://github.com/tangsanli5201/DeepPCB) — 1,500 image triplets. Each sample contains a defective PCB image, a defect-free golden template, and a bounding box annotation.
+[DeepPCB](https://github.com/tangsanli5201/DeepPCB) — 1,500 image triplets. Each sample: defective PCB image + defect-free golden template + bounding box annotation.
 
-| Class | YOLO ID | Description |
-|---|---|---|
-| Open Circuit | 0 | Broken conductive path |
-| Short | 1 | Unintended trace connection |
-| Mouse Bite | 2 | Notch on trace edge |
-| Spur | 3 | Copper protrusion from trace |
-| Spurious Copper | 4 | Unwanted copper deposit |
-| Pin Hole | 5 | Void in copper plating |
-
-The pipeline preserves the triplet structure (defective + template + label) through every stage — enabling Phase 2 template-based inspection via OpenCV image registration. See `ROADMAP.md`.
+| Class | YOLO ID | Mean confidence | Detections (test) |
+|---|---|---|---|
+| Open Circuit | 0 | 0.828 | 295 |
+| Short Circuit | 1 | 0.820 | 216 |
+| Mouse Bite | 2 | 0.845 | 299 |
+| Spur | 3 | 0.846 | 260 |
+| Spurious Copper | 4 | 0.893 | 237 |
+| Pin Hole | 5 | 0.881 | 230 |
 
 ---
 
-## Repository structure
+## Project structure
 
 ```
 pcb-defect-inspection-platform/
@@ -330,10 +392,12 @@ pcb-defect-inspection-platform/
 │   ├── raw/                         ← DeepPCB source (git-ignored)
 │   ├── processed/                   ← train/val/test splits
 │   └── knowledge_base/              ← RAG text files per defect class
-├── docs/                            ← architecture, roadmap, deployment
+├── notebooks/
+│   └── statistical_analysis.ipynb  ← confidence distributions, calibration, spatial
 ├── outputs/
 │   ├── eval_report/                 ← metrics, confusion matrix, failure grids
 │   ├── benchmarks/                  ← latency CSVs
+│   ├── statistical_analysis/        ← distributions, calibration, heatmaps, report
 │   ├── weights/                     ← best.pt, model.onnx
 │   └── logs/
 ├── src/
@@ -343,7 +407,6 @@ pcb-defect-inspection-platform/
 │   ├── inference/                   ← predict_image, predict_video, predict_camera
 │   ├── optimization/                ← export_onnx, benchmark, quantize
 │   ├── pipeline/                    ← orchestration runner
-│   ├── preprocessing/               ← camera_calibration, clahe, denoise
 │   ├── rag/                         ← build_index, retrieve, reasoning
 │   ├── training/                    ← train, callbacks, hyperparameters
 │   ├── utils/                       ← paths, config, logger
@@ -364,6 +427,7 @@ pcb-defect-inspection-platform/
 | Object detection | YOLOv8 (Ultralytics) |
 | Deep learning | PyTorch 2.3 |
 | Augmentation | Albumentations |
+| Statistical analysis | SciPy, scikit-learn |
 | Optimisation | ONNX Runtime |
 | Experiment tracking | Weights & Biases |
 | Vector search | FAISS |
@@ -372,22 +436,21 @@ pcb-defect-inspection-platform/
 | Frontend | Streamlit |
 | Containers | Docker + Docker Compose |
 | Testing | pytest |
-| Image processing | OpenCV, Pillow |
 
 ---
 
 ## Roadmap
 
-See `docs/ROADMAP.md` for full details.
+See [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
 | Extension | Description |
 |---|---|
-| Template-based inspection | OpenCV registration + diff map → candidate ROI → YOLO classification |
-| Vision Transformers | DETR comparison on DeepPCB benchmark |
-| TensorRT | Jetson Orin deployment target, <5ms inference |
-| Active learning | Uncertainty sampling — flag low-confidence predictions for human review |
-| MLOps | MLflow model registry + DVC + GitHub Actions CI/CD gate on mAP@50 |
-| 3D vision | MiDaS depth estimation + Open3D for components with height variation |
+| Template-based inspection | OpenCV registration + diff map → candidate ROI → YOLO |
+| Vision Transformers | DETR comparison on DeepPCB |
+| TensorRT | Jetson Orin deployment, <5ms target |
+| Active learning | Uncertainty sampling — flag low-confidence predictions |
+| MLOps | MLflow + DVC + GitHub Actions CI/CD on mAP@50 gate |
+| 3D vision | MiDaS depth estimation + Open3D for height variation |
 
 ---
 
@@ -395,10 +458,11 @@ See `docs/ROADMAP.md` for full details.
 
 - Designed and deployed an end-to-end industrial CV system achieving **98.8% mAP@50** on PCB defect detection
 - Built a 7-stage production data pipeline with typed interfaces, QA gating, and per-module logging
+- Applied **statistical characterisation** of detection confidence as a measurement signal — Kruskal-Wallis H=648.42 (p<0.0001) confirmed significant inter-class difficulty differences; ECE-based calibration analysis produced per-class deployment thresholds
 - Optimised inference to **54.8 FPS** via ONNX export on CPU
 - Developed a FastAPI REST API with model warmup, request logging, and Swagger documentation
-- Integrated a **Vision+RAG reasoning layer** that retrieves semiconductor process context on defect detection — a capability cited directly in semiconductor AI job descriptions
-- Containerised with Docker for reproducible deployment
+- Integrated a **Vision+RAG reasoning layer** that retrieves semiconductor process context on defect detection
+
 
 ---
 
@@ -416,4 +480,3 @@ See `docs/ROADMAP.md` for full details.
 *If this project was useful, a ⭐ helps others find it.*
 
 </div>
-
