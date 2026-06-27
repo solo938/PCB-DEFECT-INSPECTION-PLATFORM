@@ -29,7 +29,7 @@ https://github.com/user-attachments/assets/c8a2de29-561a-457b-8493-0a5b0eb772f4
 # System Architecture
 
 <p align="center">
-<img src="assets/PSBDEFECTSYSTEM.png" width="100%">
+<img src="assets/PCBDEFECTSYSTEM.png" width="100%">
 </p>
 
 The platform provides an end-to-end inspection pipeline covering:
