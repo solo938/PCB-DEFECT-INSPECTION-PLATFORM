@@ -33,7 +33,7 @@ The Vision+RAG layer is the differentiator. When the model detects a defect, it 
 
 ## Live demo
 
-
+https://github.com/user-attachments/assets/98927dbf-991e-432d-8c9a-d42f2b6e3376
 
 ---
 
