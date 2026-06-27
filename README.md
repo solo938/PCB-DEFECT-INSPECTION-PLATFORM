@@ -22,7 +22,7 @@ Designed for semiconductor and electronics manufacturing environments using **YO
 
 > **Working Demo Video**
 
-*(Drag your GitHub video here after uploading)*
+https://github.com/user-attachments/assets/c8a2de29-561a-457b-8493-0a5b0eb772f4
 
 ---
 
